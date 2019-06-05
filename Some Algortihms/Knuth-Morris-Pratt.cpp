@@ -76,8 +76,9 @@ int check(string &txt,string &pat,vector <int> &pre){
 }
 
 int main(){
-  string txt = "abxabcabcaby";
-  string pat = "abcaby";
+  string txt;
+  string pat;
+  cin>>txt>>pat;
   vector <int> pre(prefix(pat));
   for(int i = 0; i < (int)pre.size(); i++) cout<<pre[i]<<" ";
   cout<<endl;
