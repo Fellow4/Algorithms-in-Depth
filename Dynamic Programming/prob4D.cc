@@ -4,12 +4,12 @@ using namespace std;
 #define rep(i,n) for(int i = 0; i < n; i++)
 #define repi(i,a,n) for(int i = a; i < n; i++)
 
-void lis(vector<pair<int,int>> const& a) {
-    int n = a.size();
+void lis(vector<pair<int,int>> const& a,vector < pair <int,int> > const& org) {
+    int n = a.size(),span = org.size();
     vector<int> d(n, 1), p(n, -1);
     rep(i,n){
         rep(j,i){
-            if (a[j].first < a[i].first && d[i] < d[j] + 1) {
+            if ((a[j].first < a[i].first) && (a[j].second < a[i].second) && (d[i] < d[j] + 1)) {
                 d[i] = d[j] + 1;
                 p[i] = j;
             }
@@ -24,21 +24,33 @@ void lis(vector<pair<int,int>> const& a) {
         }
     }
 
-    vector<int> subseq;
+    vector<pair <int,int> > subseq;
     while (pos != -1) {
-        subseq.push_back(a[pos].second);
+        subseq.push_back(make_pair(a[pos].first,a[pos].second));
         pos = p[pos];
     }
-    reverse(subseq.begin(), subseq.end());
+    //print(subseq);
     int N = subseq.size();
+    vector <int> rev;
+    rep(i,N){
+      rep(j,span){
+        if(subseq[i].first == org[j].first && subseq[i].second == org[j].second){
+          rev.push_back(j);
+          break;
+        }
+      }
+    }
+    reverse(rev.begin(),rev.end());
     cout << N << endl;
     rep(i,N){
-    	cout << subseq[i]+1 << " ";
+      cout << rev[i]+1 << " ";
     }
 }
 
+
+
 int main(){
-	#ifndef ONLINE_JUDGE
+  #ifndef ONLINE_JUDGE
     freopen("input.txt", "r", stdin);
     freopen("output.txt", "w", stdout);
   #endif
@@ -47,54 +59,19 @@ int main(){
     cout.tie(NULL);
     int n,W,H;
     cin >> n >> W >> H;
-    vector <pair <int,int> > v,w;
+    vector <pair <int,int> > v,org;
     rep(i,n){
-        int a,b;
-        cin >> a >> b;
-        v.push_back(make_pair(b,i));
-        w.push_back(make_pair(a,i));
+      int we,he;
+      cin >> we >> he;
+      if(he > H && we > W){
+        v.push_back(make_pair(he,we));
+      }
+        org.push_back(make_pair(he,we));
     }
-    sort(v.begin(),v.end());
-    int idx = -1,flag = 0;
-    /*vector <int> h;
-    rep(i,n){
-    	h.push_back(v[i].first);
+    if(v.size() == 0) cout << 0;
+    else {
+      sort(v.begin(),v.end());
+      lis(v,org);
     }
-    vector <int> :: iterator ip;
-    ip = upper_bound(h.begin(),h.end(),H);
-    if(ip == h.end()) idx = n;
-    else{
-         //Elements of the subsequence beginning with idx
-         idx = ip-h.begin();
-        }*/
-    rep(i,n){
-    	if(v[i].first > H) {
-    		idx = i;
-    		flag = 1;
-    		break;
-    	}
-    }
-    if(!flag) cout << 0;
-    else{
-    //cout << "Index is:" << idx << endl;
-    	flag = 0;
-    	repi(i,idx,n){
-          if(w[v[i].second].first > W){
-          	flag = 1;
-          	idx = i;
-          	break;
-          } 
-    	}
-    	//cout << "New index:" << idx << endl;
-    	if(flag){
-    	//Longest increasing subsequence beginning with idx;
-    	vector <pair<int,int>> s;
-        repi(i,idx,n){
-        	s.push_back(make_pair(w[v[i].second].first,w[v[i].second].second));
-        }
-        lis(s);
-    }
-       else cout << 0;
-   }
     return 0;
-}
+  }
